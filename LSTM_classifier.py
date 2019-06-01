@@ -6,9 +6,9 @@ from keras.layers import InputLayer, Input, Masking
 from keras.layers.recurrent import LSTM, GRU
 from keras.layers.core import Dense, Activation, Dropout
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from hyperas import optim
-from hyperas.distributions import choice, uniform
-from hyperopt import Trials, STATUS_OK, tpe
+# from hyperas import optim
+# from hyperas.distributions import choice, uniform
+# from hyperopt import Trials, STATUS_OK, tpe
 from keras import optimizers
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
