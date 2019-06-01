@@ -8,6 +8,7 @@ from sklearn.metrics import roc_auc_score, f1_score, accuracy_score
 from sklearn import preprocessing
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
+import tensorflow as tf
 from LSTM_classifier import LSTMModel
 
 def get_data_by_years(df, years, features, label):
@@ -80,7 +81,9 @@ def main():
     learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
     momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
     param_grid = dict(learn_rate = learn_rate, momentum = momentum)
-    grid = GridSearchCV(estimator = model, param_grid = param_grid, n_jobs=-1)
+    grid = GridSearchCV(estimator = model, param_grid = param_grid, scoring = 'recall')
+    print(data['Xtrain'])
+    print(data['Ytrain'])
     grid_result = grid.fit(data['Xtrain'], data['Ytrain'])
 
 
