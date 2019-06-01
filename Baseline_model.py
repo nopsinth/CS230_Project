@@ -68,9 +68,9 @@ def main():
 
     scale = MinMaxScaler(feature_range=(0, 1))
     data['Xtrain'] = scale.fit_transform(data['Xtrain'])
-    # data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
+    data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
     data['Xtest'] = scale.fit_transform(data['Xtest'])
-    # data['Ytest'] = scale.fit_transform(data['Ytest'].reshape(-1,1))
+    data['Ytest'] = scale.fit_transform(data['Ytest'].reshape(-1,1))
     trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back)
     testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back)
     print(trainX.shape, trainY.shape, testX.shape, testY.shape)
@@ -81,7 +81,7 @@ def main():
     learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
     momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
     param_grid = dict(learn_rate = learn_rate, momentum = momentum)
-    grid = GridSearchCV(estimator = model, param_grid = param_grid, scoring = 'recall')
+    grid = GridSearchCV(estimator = model, param_grid = param_grid, n_jobs=-1)
     print(data['Xtrain'])
     print(data['Ytrain'])
     grid_result = grid.fit(data['Xtrain'], data['Ytrain'])

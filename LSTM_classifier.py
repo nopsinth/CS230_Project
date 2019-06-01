@@ -14,7 +14,7 @@ from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 class LSTMModel():
 
-    def train(self, X, Y):
+    def train(self, X, Y, learn_rate = 0.001, momentum = 0):
         assert len(X) == len(Y)
         self.model = Sequential()
         self.model.add(LSTM(units=128, input_shape=(X.shape[1], X.shape[2]), return_sequences = True))
@@ -33,8 +33,8 @@ class LSTMModel():
         #Learning rate (Log scale)
         #Number of units and Number of epochs
         #{{choice([adam, 'adagrad', 'sgd'])}}
-        adam = optimizers.Adam(lr = 0.0001)
-        self.model.compile(loss = 'binary_crossentropy', optimizer = adam, metrics = ['accuracy'])
+        optimizer = optimizers.SGD(lr = learn_rate, momentum = momentum)
+        self.model.compile(loss = 'binary_crossentropy', optimizer = optimizer, metrics = ['accuracy'])
         es = EarlyStopping(monitor='loss', mode = 'min', verbose=1)
         # self.model.fit(X, Y, epochs = 20, batch_size = 64)
         return self.model
