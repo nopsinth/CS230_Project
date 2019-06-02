@@ -9,7 +9,13 @@ from sklearn import preprocessing
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
 import tensorflow as tf
+from keras.models import Sequential, Model
+from keras.layers import InputLayer, Input, Masking
+from keras.layers.recurrent import LSTM, GRU
+from keras.layers.core import Dense, Activation, Dropout
+from keras.callbacks import EarlyStopping, ModelCheckpoint
 from LSTM_classifier import LSTMModel
+import warnings
 
 def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
@@ -34,7 +40,28 @@ def create_dataset(Xtrain, Ytrain, look_back):
         dataY.append(Ytrain[i + look_back])
     return np.array(dataX), np.array(dataY)
 
+num_features = 15
+def grid_model(optimizer = 'rmsprop'):
+    model = Sequential()
+    model.add(LSTM(units=128, input_shape=(look_back, num_features), return_sequences = True))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+    model.add(LSTM(units=128, return_sequences = True))
+    model.add(Activation('relu'))
+    model.add(Dropout(0.7))
+    model.add(LSTM(units=128))
+    model.add(Dropout(0.2))
+    model.add(Dense(units = 1))
+    model.add(Activation('sigmoid'))
+    model.summary()
+    model.compile(loss = 'binary_crossentropy', optimizer = optimizer, metrics = ['accuracy'])
+    es = EarlyStopping(monitor='loss', mode = 'min', verbose=1)
+    # model.fit(X, Y, epochs = 20, batch_size = 64)
+    return model
+
+
 def main():
+    warnings.simplefilter(action='ignore', category=FutureWarning)
     df = pd.read_csv("mod_QQQ.csv")
     df['Date'] = pd.to_datetime(df["Date"], dayfirst = True)
     data_start = 1999
@@ -75,17 +102,16 @@ def main():
     testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back)
     print(trainX.shape, trainY.shape, testX.shape, testY.shape)
 
-    lstm = LSTMModel()
-
-    model = KerasClassifier(build_fn = lstm.train(trainX, trainY), epochs = 20, batch_size = 32, verbose=0)
-    learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
-    momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
-    param_grid = dict(learn_rate = learn_rate, momentum = momentum)
-    grid = GridSearchCV(estimator = model, param_grid = param_grid, n_jobs=-1)
-    print(data['Xtrain'])
-    print(data['Ytrain'])
-    grid_result = grid.fit(data['Xtrain'], data['Ytrain'])
-
+    #lstm = LSTMModel()
+    model = KerasClassifier(build_fn = grid_model, epochs = 20, batch_size=32, verbose=0)
+    batch_size = [16, 32, 64, 128]
+    epochs = [10, 50, 100]
+    optimizers = ['rmsprop', 'adam']
+    # learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
+    # momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
+    param_grid = dict(batch_size=batch_size, epochs=epochs, optimizer = optimizers)
+    grid = GridSearchCV(estimator = model, param_grid = param_grid, n_jobs = -1)
+    grid_result = grid.fit(testX, testY)
 
     # print("Summarize the results")
     # print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
