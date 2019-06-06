@@ -169,7 +169,7 @@ def main():
     model_ridge.train(data['Xtrain'], data['Ytrain'])
     model_lasso.train(data['Xtrain'], data['Ytrain'])
 
-    Y_pred_logistic = model_logistic.predict_proba(data['Xtest'])[:,1]
+    Y_pred_logistic = model_logistic.predict(data['Xtest'])
     Y_pred_ridge = model_ridge.predict(data['Xtest'])
     Y_pred_lasso = model_lasso.predict(data['Xtest'])
 
