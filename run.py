@@ -4,7 +4,7 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 from LogisticRegression import RegressionModel
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, precision_recall_curve
+from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, recall_score, precision_score
 from sklearn import preprocessing
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import GridSearchCV
@@ -127,37 +127,55 @@ def main():
     '''
     Prediction
     '''
+    threshold = 0.5
+
     y_pred = model_rnn_multi_lstm.predict(testX)
     acc = model_rnn_multi_lstm.evaluate(testX, testY)
-    print("Acuuracy" + str(-acc))
+    print("Acuuracy (Multi-LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
     print('AUC Score of', 'Multi-layer LSTM')
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
+    print('Precision Score of', 'Multi-layer LSTM')
+    print(precision_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
+    print('Recall Score of', 'Multi-layer LSTM')
+    print(recall_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
 
     y_pred = model_rnn_single_lstm.predict(testX)
     acc = model_rnn_single_lstm.evaluate(testX, testY)
-    print("Acuuracy (LSTM)" + str(-acc))
+    print("Acuuracy (Single-LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
     print('AUC Score of', 'Single-layer LSTM')
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
+    print('Precision Score of', 'Single-layer LSTM')
+    print(precision_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
+    print('Recall Score of', 'Single-layer LSTM')
+    print(recall_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
 
     y_pred = model_rnn_gru.predict(testX)
     acc = model_rnn_gru.evaluate(testX, testY)
-    print("Acuuracy (LSTM)" + str(-acc))
+    print("Acuuracy (GRU)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
     print('AUC Score of', 'GRU')
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
+    print('Precision Score of', 'GRU')
+    print(precision_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
+    print('Recall Score of', 'GRU')
+    print(recall_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
 
     y_pred = model_rnn_lstm_gru.predict(testX)
     acc = model_rnn_lstm_gru.evaluate(testX, testY)
-    print("Acuuracy (LSTM)" + str(-acc))
+    print("Acuuracy (GRU-LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
     print('AUC Score of', 'stacked LSTM and GRU')
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
+    print('Precision Score of', 'stacked LSTM and GRU')
+    print(precision_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
+    print('Recall Score of', 'stacked LSTM and GRU')
+    print(recall_score(np.array(y_true), np.array(y_pred.ravel() > threshold)))
 
     '''
     Prediction (Baseline)
@@ -188,14 +206,29 @@ def main():
     Y_pred_logistic_label = np.array(Y_pred_logistic > 0.5)
     Y_pred_ridge_label = np.array(Y_pred_ridge > 0.5)
     Y_pred_lasso_label = np.array(Y_pred_lasso > 0.5)
-    print(accuracy_score(Ytest, Y_pred, normalize = True))
-    print(accuracy_score(Ytest, Y_pred_ridge_label, normalize = True))
-    print(accuracy_score(Ytest, Y_pred_lasso_label, normalize = True))
+    print(accuracy_score(data['Ytest'], Y_pred, normalize = True))
+    print(accuracy_score(data['Ytest'], Y_pred_ridge_label, normalize = True))
+    print(accuracy_score(data['Ytest'], Y_pred_lasso_label, normalize = True))
 
-    # #F1-score
-    # print(f1_score(Ytest, np.array(Y_pred), average='weighted'))
-    # print(f1_score(Ytest, np.array(Y_pred_ridge > threshold), average='weighted'))
-    # print(f1_score(Ytest, np.array(Y_pred_lasso > threshold), average='weighted'))
+    #AUC-score
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred), average='mircro'))
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+
+    #F1-score
+    print(f1_score(data['Ytest'], np.array(Y_pred), average='mircro'))
+    print(f1_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
+    print(f1_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+
+    #Precision
+    print(precision_score(data['Ytest'], np.array(Y_pred), average='mircro'))
+    print(precision_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
+    print(precision_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+
+    #Recall
+    print(recall_score(data['Ytest'], np.array(Y_pred), average='mircro'))
+    print(recall_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
+    print(recall_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
 
 if __name__ == "__main__":
     main()
