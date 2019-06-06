@@ -101,15 +101,14 @@ def main():
     testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back)
     print(trainX.shape, trainY.shape, testX.shape, testY.shape)
 
-    model_rnn = RNNModel()
     model_rnn_multi_lstm = RNNModel()
     model_rnn_single_lstm = RNNModel()
     model_rnn_gru = RNNModel()
     model_rnn_lstm_gru = RNNModel()
-    model_rnn.train_multi_lstm(trainX, trainY)
-    model_rnn.train_single_lstm(trainX, trainY)
-    model_rnn.train_gru(trainX, trainY)
-    model_rnn.train_lstm_gru(trainX, trainY)
+    model_rnn_multi_lstm.train_multi_lstm(trainX, trainY)
+    model_rnn_single_lstm.train_single_lstm(trainX, trainY)
+    model_rnn_gru.train_gru(trainX, trainY)
+    model_rnn_lstm_gru.train_lstm_gru(trainX, trainY)
 
     '''
     Grid Search (Tuning Hyperparameters)
@@ -129,7 +128,7 @@ def main():
     Prediction
     '''
     y_pred = model_rnn_multi_lstm.predict(testX)
-    acc = lstm.evaluate(testX, testY)
+    acc = model_rnn_multi_lstm.evaluate(testX, testY)
     print("Acuuracy" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
@@ -137,7 +136,7 @@ def main():
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
 
     y_pred = model_rnn_single_lstm.predict(testX)
-    acc = lstm.evaluate(testX, testY)
+    acc = model_rnn_single_lstm.evaluate(testX, testY)
     print("Acuuracy (LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
@@ -145,7 +144,7 @@ def main():
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
 
     y_pred = model_rnn_gru.predict(testX)
-    acc = lstm.evaluate(testX, testY)
+    acc = model_rnn_gru.evaluate(testX, testY)
     print("Acuuracy (LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
@@ -153,7 +152,7 @@ def main():
     print(roc_auc_score(np.array(y_true), np.array(y_pred.ravel())))
 
     y_pred = model_rnn_lstm_gru.predict(testX)
-    acc = lstm.evaluate(testX, testY)
+    acc = model_rnn_lstm_gru.evaluate(testX, testY)
     print("Acuuracy (LSTM)" + str(-acc))
 
     y_true = data['Ytest'][look_back+1:].ravel()
