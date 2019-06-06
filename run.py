@@ -206,29 +206,29 @@ def main():
     Y_pred_logistic_label = np.array(Y_pred_logistic > 0.5)
     Y_pred_ridge_label = np.array(Y_pred_ridge > 0.5)
     Y_pred_lasso_label = np.array(Y_pred_lasso > 0.5)
-    print(accuracy_score(data['Ytest'], Y_pred, normalize = True))
+    print(accuracy_score(data['Ytest'], Y_pred_logistic_label, normalize = True))
     print(accuracy_score(data['Ytest'], Y_pred_ridge_label, normalize = True))
     print(accuracy_score(data['Ytest'], Y_pred_lasso_label, normalize = True))
 
     #AUC-score
-    print(roc_auc_score(data['Ytest'], np.array(Y_pred), average='mircro'))
-    print(roc_auc_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
-    print(roc_auc_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred_logistic_label), average='mircro'))
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred_ridge_label), average='micro'))
+    print(roc_auc_score(data['Ytest'], np.array(Y_pred_lasso_label), average='micro'))
 
     #F1-score
-    print(f1_score(data['Ytest'], np.array(Y_pred), average='mircro'))
-    print(f1_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
-    print(f1_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+    print(f1_score(data['Ytest'], np.array(Y_pred_logistic_label), average='mircro'))
+    print(f1_score(data['Ytest'], np.array(Y_pred_ridge_label), average='micro'))
+    print(f1_score(data['Ytest'], np.array(Y_pred_lasso_label), average='micro'))
 
     #Precision
-    print(precision_score(data['Ytest'], np.array(Y_pred), average='mircro'))
-    print(precision_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
-    print(precision_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+    print(precision_score(data['Ytest'], np.array(Y_pred_logistic_label), average='mircro'))
+    print(precision_score(data['Ytest'], np.array(Y_pred_ridge_label), average='micro'))
+    print(precision_score(data['Ytest'], np.array(Y_pred_lasso_label), average='micro'))
 
     #Recall
-    print(recall_score(data['Ytest'], np.array(Y_pred), average='mircro'))
-    print(recall_score(data['Ytest'], np.array(Y_pred_ridge > threshold), average='micro'))
-    print(recall_score(data['Ytest'], np.array(Y_pred_lasso > threshold), average='micro'))
+    print(recall_score(data['Ytest'], np.array(Y_pred_logistic_label), average='mircro'))
+    print(recall_score(data['Ytest'], np.array(Y_pred_ridge_label), average='micro'))
+    print(recall_score(data['Ytest'], np.array(Y_pred_lasso_label), average='micro'))
 
 if __name__ == "__main__":
     main()
