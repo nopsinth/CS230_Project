@@ -41,19 +41,20 @@ def create_dataset(Xtrain, Ytrain, look_back):
     return np.array(dataX), np.array(dataY)
 
 num_features = 15
-def grid_model(optimizer = 'rmsprop'):
+def grid_model(optimizer = 'rmsprop', num_units, learn_rate):
     model = Sequential()
-    model.add(LSTM(units=128, input_shape=(look_back, num_features), return_sequences = True))
+    model.add(LSTM(units = num_units, input_shape=(look_back, num_features), return_sequences = True))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
-    model.add(LSTM(units=128, return_sequences = True))
+    model.add(LSTM(units = num_units, return_sequences = True))
     model.add(Activation('relu'))
     model.add(Dropout(0.7))
-    model.add(LSTM(units=128))
+    model.add(LSTM(units = num_units))
     model.add(Dropout(0.2))
     model.add(Dense(units = 1))
     model.add(Activation('sigmoid'))
     model.summary()
+    optimizer_chosen = optimizers.Adam(lr = learn_rate) #Once Adam chosen
     model.compile(loss = 'binary_crossentropy', optimizer = optimizer, metrics = ['accuracy'])
     es = EarlyStopping(monitor='loss', mode = 'min', verbose = 1)
     return model
@@ -113,17 +114,16 @@ def main():
     '''
     Grid Search (Tuning Hyperparameters)
     '''
-    # model = KerasClassifier(build_fn = grid_model, epochs = 20, batch_size=32, verbose=0)
-    # batch_size = [16, 32, 64, 128]
-    # epochs = [10, 50, 100]
-    # optimizers = ['rmsprop', 'adam']
-    # learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
-    # momentum = [0.0, 0.2, 0.4, 0.6, 0.8, 0.9]
-    # param_grid = dict(batch_size=batch_size, epochs=epochs, optimizer = optimizers)
-    # grid = GridSearchCV(estimator = model, param_grid = param_grid)
-    # grid_result = grid.fit(testX, testY)
-
-    # print(grid_result.best_params_)
+    model = KerasClassifier(build_fn = grid_model, epochs = 20, batch_size=32, verbose=0)
+    batch_size = [16, 32, 64, 128]
+    epochs = [10, 50, 100]
+    optimizers = ['rmsprop', 'adam', 'adagrad']
+    learn_rate = [0.001, 0.01, 0.1, 0.2, 0.3]
+    num_units = [64, 128, 256, 512]
+    param_grid = dict(batch_size=batch_size, epochs=epochs, optimizer = optimizers, num_units =num_units, learn_rate = learn_rate)
+    grid = GridSearchCV(estimator = model, param_grid = param_grid)
+    grid_result = grid.fit(testX, testY)
+    print(grid_result.best_params_)
     '''
     Prediction
     '''
